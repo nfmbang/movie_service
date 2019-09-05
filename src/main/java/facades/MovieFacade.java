@@ -1,10 +1,12 @@
 package facades;
 
 import entities.Movie;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -48,4 +50,32 @@ public class MovieFacade {
 
     }
 
+    public List<Movie> getAll() {
+        EntityManager em = emf.createEntityManager();
+        return em.createNamedQuery("Movie.getAll").getResultList();
+    }
+
+    public Movie getMovie(String name) {
+        EntityManager em = emf.createEntityManager();
+        return em.createNamedQuery("Movie.getByName", Movie.class).getSingleResult();
+    }
+
+    public Movie getMovie(long id) {
+        EntityManager em = emf.createEntityManager();
+        return em.find(Movie.class, id);
+    }
+
+    public Movie createMovie(Movie movie) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(movie);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return movie;
+    }
 }

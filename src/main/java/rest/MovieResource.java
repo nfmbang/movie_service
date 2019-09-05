@@ -21,7 +21,7 @@ public class MovieResource {
 
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory(
             "pu",
-            "jdbc:mysql://localhost:3307/startcode",
+            "jdbc:mysql://localhost:3307/movieDB",
             "dev",
             "ax2",
             EMF_Creator.Strategy.CREATE);
@@ -37,22 +37,29 @@ public class MovieResource {
     @Path("count")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public String getRenameMeCount() {
+    public String getMovieCount() {
         long count = FACADE.getMovieCount();
-        //System.out.println("--------------->"+count);
-        return "{\"count\":" + count + "}";  //Done manually so no need for a DTO
+        return "{\"count\":" + count + "}";
     }
 
-    @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    public void create(Movie entity) {
-        throw new UnsupportedOperationException();
+    @Path("all")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public String getAll() {
+        return GSON.toJson(FACADE.getAll());
     }
 
-    @PUT
+    @Path("name/{name}")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public String getMovie(@PathParam("name") String name) {
+        return GSON.toJson(FACADE.getMovie(name));
+    }
+
     @Path("/{id}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    public void update(Movie entity, @PathParam("id") int id) {
-        throw new UnsupportedOperationException();
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public String getMovie(@PathParam("id") long id) {
+        return GSON.toJson(FACADE.getMovie(id));
     }
 }

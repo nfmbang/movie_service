@@ -1,9 +1,17 @@
 package facades;
 
-import utils.EMF_Creator;
 import entities.Movie;
+import utils.EMF_Creator;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.arrayContaining;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.contains;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,6 +29,12 @@ public class MovieFacadeTest {
 
     private static EntityManagerFactory emf;
     private static MovieFacade facade;
+    private String[] arr1 = {"Kirk Cameron", "Darren Doane", "Bridgette Cameron", "Ben Kientz"};
+    private String[] arr2 = {"Bill Murray", "Owen Wilson", "Anjelica Huston"};
+    private String[] arr3 = {"George Clooney", "Quentin Tarantino", "Harvey Keitel", "Juliette Lewis"};
+    private Movie A = new Movie(2014, "Darren Doane", "Saving Christmas", arr1, 1.8);
+    private Movie B = new Movie(2004, "Wes Anderson", "The Life Aquatic with Steve Zissou", arr2, 7.3);
+    private Movie C = new Movie(1996, "Robert Rodriguez", "From Dusk Till Dawn", arr3, 7.2);
 
     public MovieFacadeTest() {
     }
@@ -46,6 +60,7 @@ public class MovieFacadeTest {
     public static void setUpClassV2() {
         emf = EMF_Creator.createEntityManagerFactory(DbSelector.TEST, Strategy.DROP_AND_CREATE);
         facade = MovieFacade.getMovieFacade(emf);
+
     }
 
     @AfterAll
@@ -61,8 +76,10 @@ public class MovieFacadeTest {
         try {
             em.getTransaction().begin();
             em.createNamedQuery("Movie.deleteAllRows").executeUpdate();
-            em.persist(new Movie("Some txt", "More text"));
-            em.persist(new Movie("aaa", "bbb"));
+
+            em.persist(A);
+            em.persist(B);
+            em.persist(C);
 
             em.getTransaction().commit();
         } finally {
@@ -76,10 +93,34 @@ public class MovieFacadeTest {
     }
 
     // TODO: Delete or change this method
-    @Disabled
     @Test
-    public void testAFacadeMethod() {
-        assertEquals(2, facade.getMovieCount(), "Expects two rows in the database");
+    public void testGetMovieCount() {
+        assertEquals(3, facade.getMovieCount(), "Expects three rows in the database");
+    }
+
+    @Test
+    public void testGetAllMovies() {
+        List<Movie> movies = facade.getAll();
+        assertThat(movies, contains(A, B, C));
+    }
+
+    @Test
+    public void testGetMovieById() {
+        Movie movie = facade.getMovie(A.getId());
+//        System.out.println(movie.getName());
+        assertThat(movie.getActors()[0], containsString("Kirk"));
+    }
+
+    @Test
+    public void testGetMovieByName() {
+        Movie mov = facade.getMovie(B.getName());
+        assertEquals(mov, B);
+    }
+
+    @Test
+    public void testMovieHasActors() {
+        Movie movie = facade.getMovie(B.getId());
+        assertThat(movie.getActors(), arrayContaining("Bill Murray", "Owen Wilson", "Anjelica Huston"));
     }
 
 }
