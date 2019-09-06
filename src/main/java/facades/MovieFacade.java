@@ -57,7 +57,7 @@ public class MovieFacade {
 
     public Movie getMovie(String name) {
         EntityManager em = emf.createEntityManager();
-        return em.createNamedQuery("Movie.getByName", Movie.class).getSingleResult();
+        return em.createNamedQuery("Movie.getByName", Movie.class).setParameter("name", name).getSingleResult();
     }
 
     public Movie getMovie(long id) {

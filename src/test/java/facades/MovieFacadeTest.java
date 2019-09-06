@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,7 +47,7 @@ public class MovieFacadeTest {
                 "jdbc:mysql://localhost:3307/movieDB_test",
                 "dev",
                 "ax2",
-                EMF_Creator.Strategy.CREATE);
+                EMF_Creator.Strategy.DROP_AND_CREATE);
         facade = MovieFacade.getMovieFacade(emf);
     }
 
@@ -101,7 +102,7 @@ public class MovieFacadeTest {
     @Test
     public void testGetAllMovies() {
         List<Movie> movies = facade.getAll();
-        assertThat(movies, contains(A, B, C));
+        assertThat(movies, containsInAnyOrder(A, B, C));
     }
 
     @Test

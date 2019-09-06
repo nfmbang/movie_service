@@ -1,15 +1,12 @@
 package rest;
 
 import entities.Movie;
-import facades.MovieFacade;
 import utils.EMF_Creator;
 import io.restassured.RestAssured;
 import static io.restassured.RestAssured.given;
 import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.UriBuilder;
@@ -17,16 +14,11 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.isOneOf;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import utils.EMF_Creator.DbSelector;
 import utils.EMF_Creator.Strategy;
@@ -119,7 +111,7 @@ public class MovieResourceTest {
     @Test
     public void testGetMovieByName() throws Exception {
         given().contentType(ContentType.JSON)
-                .get("/movie/aquatic").then()
+                .get("/movie/name/" + B.getName()).then()
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
                 .body("name", equalTo(B.getName()));
@@ -128,9 +120,17 @@ public class MovieResourceTest {
     @Test
     public void testGetMovieById() throws Exception {
         given().contentType(ContentType.JSON)
-                .get("/2").then()
+                .get("/movie/2").then()
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
                 .body("id", equalTo(2));
+    }
+
+    @Test
+    public void testGetMovieByWrongName() throws Exception {
+        given().contentType(ContentType.JSON)
+                .get("/movie/name/Ikke en film").then()
+                .assertThat()
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR_500.getStatusCode());
     }
 }
